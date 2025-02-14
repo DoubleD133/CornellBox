@@ -90,14 +90,122 @@ public:
 		SDL_RenderPresent(renderer);
 	}
 
-	void parallel_render(hittable_list& world, light& worldlight) {
+	void parallel_render(hittable_list& world, light& worldlight, const char* filename = NULL, int jmin_salv = 0, int jmax_salv = 0, bool salvataggio = false) {
+		// se presente un salvataggio precedente inserire:
+		// filename : nome della foto con il precedente salvataggio
+		// jmin_salv : indice della riga da cui partire
+		// jmax_salv : indice della riga a cui arrivare e fermarsi
+		// salvataggio : true
+		// se NON presente un salvataggio precedente inserire:
+		// filename : NULL
+		// jmin_salv : 0
+		// jmin_salv : image_height - 1
+		// salvataggio : false
+
+		vector<bool> righe_viste(image_height);
 		vector<color> matrix(image_width * image_height);
 
-		parallel_for(int(0), image_height, [&](int j) {
-			if (j == image_height / 3)
-				cout << "primo terzo fatto\n";
-			if (j == 2 * image_height / 3)
-				cout << "secondo terzo fatto\n";
+		if (salvataggio && jmin_salv !=0) {
+			SDL_Surface* surface;
+			surface = loadTexture(filename, image_width, image_height);
+			for (int j = 0; j < image_height; j++) {
+				for (int i = 0; i < image_width; i++) {
+
+					int h = i;
+					int k = j;
+
+					Uint32 value = getpixel(surface, h, k);
+
+					float red = float((value >> 16) & 0xff) / 255.0f;
+					float green = float((value >> 8) & 0xff) / 255.0f;
+					float blue = float(value & 0xff) / 255.0f;
+
+					matrix[j * image_width + i] = color(red, green, blue);
+				}
+			}
+		}
+		else {
+			for (int j = 0; j < image_height; j++) {
+				for (int i = 0; i < image_width; i++) {
+					matrix[j * image_width + i] = color(0.0, 0.0, 0.0);
+				}
+			}
+		}
+		if( ! salvataggio ){
+			jmin_salv = 0;
+			jmax_salv = image_height - 1;
+		}
+
+		parallel_for(int(jmin_salv), jmax_salv + 1, [&](int j) {
+			/*if (j == image_height / 5) {
+				int j_max = 0;
+				while (righe_viste[j_max]) {
+					j_max++;
+				}
+				j_max--;
+				cout << "j = " << j_max << ", primo quinto fatto\n";
+				for (int k = 0; k < image_height; k++) {
+					for (int i = 0; i < image_width; i++) {
+						color pixel_color = matrix[k * image_width + i];
+						setColor(pixel_color[0], pixel_color[1], pixel_color[2]);
+						setPixel(i, k);
+					}
+				}
+				SDL_RenderPresent(renderer);
+				saveScreenshotBMP("screenshot_primo_quinto" + to_string(j_max) + ".bmp");
+			}
+			if (j == 2 * image_height / 5) {
+				int j_max = 0;
+				while (righe_viste[j_max]) {
+					j_max++;
+				}
+				j_max--;
+				cout << "j = " << j_max << ", secondo quinto fatto\n";
+				for (int k = 0; k < image_height; k++) {
+					for (int i = 0; i < image_width; i++) {
+						color pixel_color = matrix[k * image_width + i];
+						setColor(pixel_color[0], pixel_color[1], pixel_color[2]);
+						setPixel(i, k);
+					}
+				}
+				SDL_RenderPresent(renderer);
+				saveScreenshotBMP("screenshot_secondo_quinto" + to_string(j_max) + ".bmp");
+			}
+			if (j == 3 * image_height / 5) {
+				int j_max = 0;
+				while (righe_viste[j_max]) {
+					j_max++;
+				}
+				j_max--;
+				cout << "j = " << j_max << ", terzo quinto fatto\n";
+				for (int k = 0; k < image_height; k++) {
+					for (int i = 0; i < image_width; i++) {
+						color pixel_color = matrix[k * image_width + i];
+						setColor(pixel_color[0], pixel_color[1], pixel_color[2]);
+						setPixel(i, k);
+					}
+				}
+				SDL_RenderPresent(renderer);
+				saveScreenshotBMP("screenshot_terzo_quinto" + to_string(j_max) + ".bmp");
+			}
+			if (j == 4 * image_height / 5) {
+				int j_max = 0;
+				while (righe_viste[j_max]) {
+					j_max++;
+				}
+				j_max--;
+				cout << "j = " << j_max << ", quarto quinto fatto\n";
+				for (int k = 0; k < image_height; k++) {
+					for (int i = 0; i < image_width; i++) {
+						color pixel_color = matrix[k * image_width + i];
+						setColor(pixel_color[0], pixel_color[1], pixel_color[2]);
+						setPixel(i, k);
+					}
+				}
+				SDL_RenderPresent(renderer);
+				saveScreenshotBMP("screenshot_quarto_quinto" + to_string(j_max) + ".bmp");
+			}*/
+
 			for (int i = 0; i < image_width; ++i) {
 
 
@@ -111,6 +219,7 @@ public:
 				pixel_color /= samples_per_pixel;
 				matrix[j * image_width + i] = pixel_color;
 			}
+			righe_viste[j] = true;
 			});
 
 		for (int j = 0; j < image_height; j++) {

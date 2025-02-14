@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-const int DEEP_MAX = 20; // 8 o 20 consigliati
+const int DEEP_MAX = 35; // 8 o 20 consigliati
 
 using std::shared_ptr;
 using std::make_shared;
@@ -541,6 +541,54 @@ public:
 		color Lr = ray_color(reflected_ray, world, light, camera_pos, t, depth + 1);
 		L += color(pow(c_out[0], t) * Lr[0] * fr[0], pow(c_out[1], t) * Lr[1] * fr[1], pow(c_out[2], t) * Lr[2] * fr[2]);
 		return L;
+	}
+};
+
+class lambertian_shiny : public material {
+public:
+	color c_out = color(1.0, 1.0, 1.0);
+	color albedo;
+	// probabilità che rifletta il raggio
+	float prob = 0.5;
+	// distorsione del raggio riflesso
+	float fuzz;
+
+	lambertian_shiny(const color& a, float p, float f) : albedo(a), prob(p) { if (f < 1) fuzz = f; else fuzz = 1; }
+
+	color shading(const ray& r, light& light, hit_record& hr, point3& camera_pos, hittable_list& world, int depth) override {
+		if (random_float() >= 0.5) {
+			color L(0.0, 0.0, 0.0);
+			vec3 wo;
+			wo = hr.normal + random_in_unit_sphere();
+
+			float t;
+			color fr;
+			if (hr.m->texture != NULL)
+				fr = texture->value(hr.u, hr.v, hr.p);
+			else
+				fr = albedo;
+			ray reflected_ray(hr.p, wo);
+			color Lr = ray_color(reflected_ray, world, light, camera_pos, t, depth + 1);
+			L += color(pow(c_out[0], t) * Lr[0] * fr[0], pow(c_out[1], t) * Lr[1] * fr[1], pow(c_out[2], t) * Lr[2] * fr[2]);
+			return L;
+		}
+		else {
+			color L(0.0, 0.0, 0.0);
+			vec3 wi, wo;
+			float len = r.d.length();
+			wi = -r.d / len;
+			hr.d_dot_n = dot(wi, hr.normal);
+			wo = reflect(wi, hr.normal);
+
+			float t;
+			color fr = albedo;
+			ray reflected_ray(hr.p, wo + fuzz * random_in_unit_sphere());
+			if (dot(reflected_ray.direction(), hr.normal) > 0) {
+				color Lr = ray_color(reflected_ray, world, light, camera_pos, t, depth + 1);
+				L += color(pow(c_out[0], t) * Lr[0] * fr[0], pow(c_out[1], t) * Lr[1] * fr[1], pow(c_out[2], t) * Lr[2] * fr[2]);
+			}
+			return L;
+		}
 	}
 };
 
