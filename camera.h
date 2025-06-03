@@ -232,6 +232,49 @@ public:
 		SDL_RenderPresent(renderer);
 	}
 
+	void parallel_renderReUseSemple(hittable_list& world, light& worldlight, const char* filename, int sOld, int sNew) {
+		// se presente un salvataggio di Semple precedente inserire:
+		// filename : nome della foto con il precedente salvataggio
+		// sOld : numero di Semple per pixel nel precedente salvataggio
+		// sNew : numero di Semple per pixel nell'attuale rendering (cam.samples_per_pixel)
+
+		vector<color> matrix(image_width * image_height);
+
+		SDL_Surface* surface;
+		surface = loadTexture(filename, image_width, image_height);
+
+		parallel_for(0, image_height, [&](int j) {
+			for (int i = 0; i < image_width; ++i) {
+
+				Uint32 value = getpixel(surface, i, j);
+
+				float red = float((value >> 16) & 0xff) / 255.0f;
+				float green = float((value >> 8) & 0xff) / 255.0f;
+				float blue = float(value & 0xff) / 255.0f;
+
+				color pixel_color = color(red, green, blue) * sOld; // somma delle scansioni fatte nel precedente rendering
+
+				for (int sample = sOld + 1; sample < sNew; ++sample) {
+					ray r = get_ray(i, j);
+					pixel_color += ray_color(r, world, worldlight);
+				}
+
+				pixel_color /= sNew;
+				matrix[j * image_width + i] = pixel_color;
+			}
+			});
+
+		for (int j = 0; j < image_height; j++) {
+			for (int i = 0; i < image_width; i++) {
+				color pixel_color = matrix[j * image_width + i];
+				setColor(pixel_color[0], pixel_color[1], pixel_color[2]);
+				setPixel(i, j);
+			}
+		}
+		SDL_RenderPresent(renderer);
+	}
+
+
 private:
 	point3 pixel00_loc;    // Location of pixel 0, 0
 	vec3   pixel_delta_u;  // Offset to pixel to the right

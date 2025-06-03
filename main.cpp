@@ -32,7 +32,7 @@ int init(int width, int height) {
 	}
 
 	/* Create the window where we will draw. */
-	window = SDL_CreateWindow("Texture Mesh", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Path Tracing", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
 	if (window == nullptr) {
 		cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
 		SDL_Quit();
@@ -76,21 +76,7 @@ int main(int argc, char* argv[])
 	world.add(light_position);
 
 
-	//auto light_position2 = make_shared<instance>(sphere_model, light);
-	//light_position2->scale(2.0f, 2.0f, 2.0f);
-	//light_position2->translate(0.5, 15.8, -14.5);
-	//world.add(light_position2);
-
-	//  0, 10; -0, 22;  0, 175
-	// -0, 10; -0, 22;  0, 175
-	// -0, 10; -0, 22; -0, 175
-	//  0, 10; -0, 22; -0, 175
-	//  0, 205; -0,22;  0, 00
-	// -0,20;   -0,22;   0,00
-
-
 	//MATERIALI
-
 	// Vetro Marrone
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
 	// inoltre questo vetro è colorato di marrone (vedi c_in)
@@ -100,7 +86,7 @@ int main(int argc, char* argv[])
 	m_vetro_marrone_in_aria->eta_out = 1.0;
 	// definisco i colori di filtraggio
 	m_vetro_marrone_in_aria->c_out = color(1.0, 1.0, 1.0);
-	m_vetro_marrone_in_aria->c_in = color(139.0 / 255.0, 69.0 / 255.0, 19.0 / 255.0);
+	m_vetro_marrone_in_aria->c_in = color( pow(139.0 / 255.0, 0.1), pow(69.0 / 255.0, 0.1), pow(19.0 / 255.0, 0.1));
 
 	//Vetro verde
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -111,7 +97,7 @@ int main(int argc, char* argv[])
 	m_vetro_verde_in_aria->eta_out = 1.0;
 	// definisco i colori di filtraggio
 	m_vetro_verde_in_aria->c_out = color(1.0, 1.0, 1.0);
-	m_vetro_verde_in_aria->c_in = color(34.0 / 255.0, 139.0 / 255.0, 34.0 / 255.0);
+	m_vetro_verde_in_aria->c_in = color(pow(34.0 / 255.0, 0.2), pow(139.0 / 255.0, 0.2), pow(34.0 / 255.0, 0.2));
 
 	//Vetro viola
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -122,7 +108,7 @@ int main(int argc, char* argv[])
 	m_vetro_viola_in_aria->eta_out = 1.0;
 	// definisco i colori di filtraggio
 	m_vetro_viola_in_aria->c_out = color(1.0, 1.0, 1.0);
-	m_vetro_viola_in_aria->c_in = color(138.0 / 255.0, 43.0 / 255.0, 226.0 / 255.0);
+	m_vetro_viola_in_aria->c_in = color(pow(138.0 / 255.0, 0.1), pow(43.0 / 255.0, 0.1), pow(226.0 / 255.0, 0.1));
 
 	//Vetro celeste
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -133,7 +119,7 @@ int main(int argc, char* argv[])
 	m_vetro_caleste_in_aria->eta_out = 1.0; // vuoto
 	// definisco i colori di filtraggio
 	m_vetro_caleste_in_aria->c_out = color(1.0, 1.0, 1.0); // bianco perchè l'aria non modifica il colore
-	m_vetro_caleste_in_aria->c_in = color(153.0 / 255.0, 203.0 / 255.0, 1.0);
+	m_vetro_caleste_in_aria->c_in = color(pow(153.0 / 255.0, 0.7), pow(203.0 / 255.0, 0.7), 1.0);
 
 	//Vetro rosa
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -144,7 +130,7 @@ int main(int argc, char* argv[])
 	m_vetro_rosa_in_aria->eta_out = 1.0; // vuoto
 	// definisco i colori di filtraggio
 	m_vetro_rosa_in_aria->c_out = color(1.0, 1.0, 1.0); // bianco perchè l'aria non modifica il colore
-	m_vetro_rosa_in_aria->c_in = color(pow(198.0 / 255.0, 3.0), pow(146.0 / 255.0, 3.0), pow(148.0 / 255.0, 3.0));
+	m_vetro_rosa_in_aria->c_in = color(pow(198.0 / 255.0, 0.3), pow(146.0 / 255.0, 0.3), pow(148.0 / 255.0, 0.3));
 
 	//Vetro oro
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -155,7 +141,7 @@ int main(int argc, char* argv[])
 	m_vetro_oro_in_aria->eta_out = 1.0; // vuoto
 	// definisco i colori di filtraggio
 	m_vetro_oro_in_aria->c_out = color(1.0, 1.0, 1.0); // bianco perchè l'aria non modifica il colore
-	m_vetro_oro_in_aria->c_in = color(0.65, 0.45, 0.0); //= color(205.0 / 255.0, 164.0 / 255.0, 52.0 / 255.0);
+	m_vetro_oro_in_aria->c_in = color(pow(0.65, 0.2), pow(0.45, 0.2), 0.0); //= color(205.0 / 255.0, 164.0 / 255.0, 52.0 / 255.0);
 
 	//Vetro grigio
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -166,7 +152,7 @@ int main(int argc, char* argv[])
 	m_vetro_grigio_in_aria->eta_out = 1.0; // vuoto
 	// definisco i colori di filtraggio
 	m_vetro_grigio_in_aria->c_out = color(1.0, 1.0, 1.0); // bianco perchè l'aria non modifica il colore
-	m_vetro_grigio_in_aria->c_in = color(120.0 / 255.0, 120.0 / 255.0, 120.0 / 255.0);
+	m_vetro_grigio_in_aria->c_in = color(pow(120.0 / 255.0, 0.3), pow(120.0 / 255.0, 0.3), pow(120.0 / 255.0, 0.3));
 
 	//Vetro normale
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -177,8 +163,7 @@ int main(int argc, char* argv[])
 	m_vetro_in_aria->eta_out = 1.0; // vuoto
 	// definisco i colori di filtraggio
 	m_vetro_in_aria->c_out = color(1.0, 1.0, 1.0); // bianco perchè l'aria non modifica il colore
-	m_vetro_in_aria->c_in = color(0.75, 0.75, 0.75);
-
+	m_vetro_in_aria->c_in = color(0.85, 0.85, 0.85);
 
 	//Vetro scuro
 	// materiale per le superfici che dentro sono in vetro e fuori sono circondate da aria
@@ -189,7 +174,7 @@ int main(int argc, char* argv[])
 	m_vetroS_in_aria->eta_out = 1.0; // vuoto
 	// definisco i colori di filtraggio
 	m_vetroS_in_aria->c_out = color(1.0, 1.0, 1.0); // bianco perchè l'aria non modifica il colore
-	m_vetroS_in_aria->c_in = color(0.75, 0.75, 0.75);
+	m_vetroS_in_aria->c_in = color(0.4, 0.4, 0.4);
 
 	//vetro normale in acqua
 	// materiale per le superfici che dentro sono in vetro e fuori sono di acqua
@@ -199,8 +184,8 @@ int main(int argc, char* argv[])
 	m_vetro_in_acqua->eta_in = 1.51; // vetro
 	m_vetro_in_acqua->eta_out = 1.33; // acqua
 	// definisco i colori di filtraggio
-	m_vetro_in_acqua->c_out = color(pow(153.0 / 255.0, 0.1), pow(203.0 / 255.0, 0.1), 1.0);
-	m_vetro_in_acqua->c_in = color(0.75, 0.75, 0.75);
+	m_vetro_in_acqua->c_out = color(pow(153.0 / 255.0, 0.009), pow(203.0 / 255.0, 0.009), 1.0);
+	m_vetro_in_acqua->c_in = color(0.85, 0.85, 0.85);
 
 	//acqua in aria
 	// materiale per le superfici che dentro sono in acqua e fuori hanno l'aria
@@ -210,7 +195,7 @@ int main(int argc, char* argv[])
 	m_acqua_in_aria->eta_out = 1.0; // aria
 	// definisco i colori di filtraggio
 	m_acqua_in_aria->c_out = color(1.0, 1.0, 1.0);
-	m_acqua_in_aria->c_in = color(pow(153.0 / 255.0, 0.1), pow(203.0 / 255.0, 0.1), 1.0);
+	m_acqua_in_aria->c_in = color(pow(153.0 / 255.0, 0.009), pow(203.0 / 255.0, 0.009), 1.0);
 
 	//Plastica trasparente in aria
 	// materiale per le superfici che dentro sono in plastica trasparente e fuori sono circondate da aria
@@ -240,88 +225,70 @@ int main(int argc, char* argv[])
 	mesh* gesu = new mesh("models/Gesu con mangiatoia.obj", "models/");
 
 	// creo un'istanza solo al fine di usarne le matrici
-	// NON SARà INSERITA NELLA SCENA
 	auto instance_di_supporto = make_shared<instance>(gesu, m_vetro_oro_in_aria);
 	instance_di_supporto->translate(-0.5f, 0.0f, -0.7f);
 	instance_di_supporto->scale(1.5, 1.6, 2.0);
 	instance_di_supporto->translate(-7.0f, 5.4f, 5.0f);
 	instance_di_supporto->translate(5.0f, -10.4f, -9.7f);
-	instance_di_supporto->rotate_y(17.0);/**/
+	instance_di_supporto->rotate_y(17.0);
 	// ho replicato le trasformazioni che vengono fatte alla stalla
 	// ora le applico a tutti i personaggi della natività
 
 	auto instance_ptrGesu = make_shared<instance>(gesu, m_vetro_oro_in_aria);
-	// ingrandimento
 	float scala = 2.0;
 	instance_ptrGesu->translate(0.0f, 0.0f, -0.15f);
 	instance_ptrGesu->scale(scala, scala, scala);
 	instance_ptrGesu->translate(0.0f, 0.0f, scala * 0.15f);
-
 	instance_ptrGesu->translate(0.0f, -0.5f, 0.0f);
 	instance_ptrGesu->scale(6.0, 6.0, 6.0);
-
 	instance_ptrGesu->setCMat(instance_di_supporto->getCMat()* instance_ptrGesu->getCMat());
 	instance_ptrGesu->setIMat(instance_ptrGesu->getIMat()* instance_di_supporto->getIMat());
-
 	instance_ptrGesu->InOmbrabile = true;
 	instance_ptrGesu->FaOmbra = true;
 	world.add(instance_ptrGesu);
 
 	mesh* madonna = new mesh("models/virginMary.obj", "models/");
 	auto instance_ptrMadonna = make_shared<instance>(madonna, m_vetro_rosa_in_aria);
-	// ingrandimento
 	float scala2 = 1.75;
 	instance_ptrMadonna->translate(0.1f, 0.0f, -0.05f);
 	instance_ptrMadonna->scale(scala2, scala2, scala2);
 	instance_ptrMadonna->translate(-scala2 / 10.0f, 0.0f, scala2 / 20.0f);
-
 	instance_ptrMadonna->translate(-0.05f, -0.5f, 0.0f);
 	instance_ptrMadonna->translate(0.0f, -0.0f, 0.12f);
 	instance_ptrMadonna->scale(6.0, 6.0, 6.0);
-
 	instance_ptrMadonna->setCMat(instance_di_supporto->getCMat()* instance_ptrMadonna->getCMat());
 	instance_ptrMadonna->setIMat(instance_ptrMadonna->getIMat()* instance_di_supporto->getIMat());
-
 	instance_ptrMadonna->InOmbrabile = true;
 	instance_ptrMadonna->FaOmbra = true;
 	world.add(instance_ptrMadonna);
 
 	mesh* giuseppe = new mesh("models/Giuseppe.obj", "models/");
 	auto instance_ptrGiuseppe = make_shared<instance>(giuseppe, m_vetro_caleste_in_aria);
-	// ingrandimento
 	float scala3 = 1.9;
 	instance_ptrGiuseppe->translate(-0.11f, 0.0f, -0.05f);
 	instance_ptrGiuseppe->scale(scala3, scala3, scala3);
 	instance_ptrGiuseppe->rotate_y(0.0);
 	instance_ptrGiuseppe->translate(scala3 * 0.11f, 0.0f, scala3 / 20.0f);
-
-	//instance_ptrGiuseppe->translate(0.2f, -0.48f, 0.15f);
 	instance_ptrGiuseppe->translate(0.07f, -0.48f, 0.15f);
 	instance_ptrGiuseppe->translate(-0.07f, -0.0f, -0.20f);
 	instance_ptrGiuseppe->scale(6.0, 6.0, 6.0);
-
 	instance_ptrGiuseppe->setCMat(instance_di_supporto->getCMat()* instance_ptrGiuseppe->getCMat());
 	instance_ptrGiuseppe->setIMat(instance_ptrGiuseppe->getIMat()* instance_di_supporto->getIMat());
-
 	instance_ptrGiuseppe->InOmbrabile = true;
 	instance_ptrGiuseppe->FaOmbra = true;
 	world.add(instance_ptrGiuseppe);
 
 	mesh* bue = new mesh("models/bue.obj", "models/");
-	auto instance_ptrBue = make_shared<instance>(bue, m_vetro_grigio_in_aria);
-	// ingrandimento
+	auto instance_ptrBue = make_shared<instance>(bue, m_vetroS_in_aria);
 	instance_ptrBue->translate(-0.1f, 0.0f, 0.07f);
 	instance_ptrBue->scale(scala2, scala2, scala2);
 	instance_ptrBue->rotate_y(-15.0);
 	instance_ptrBue->translate(scala2 * 0.1f, -0.0f, -scala2 * 0.07f);
-
 	instance_ptrBue->translate(0.15f, -0.48f, -0.020f);
 	instance_ptrBue->translate(0.0f, -0.0f, 0.4f);
 	instance_ptrBue->scale(6.0, 6.0, 6.0);
-
 	instance_ptrBue->setCMat(instance_di_supporto->getCMat()* instance_ptrBue->getCMat());
 	instance_ptrBue->setIMat(instance_ptrBue->getIMat()* instance_di_supporto->getIMat());
-
 	instance_ptrBue->InOmbrabile = true;
 	instance_ptrBue->FaOmbra = true;
 	world.add(instance_ptrBue);
@@ -333,15 +300,12 @@ int main(int argc, char* argv[])
 	instance_ptrAsinello->scale(scala3, scala3, scala3);
 	instance_ptrAsinello->rotate_y(-25.0);
 	instance_ptrAsinello->translate(-scala3 * 0.11f, 0.0f, -scala3 * 0.07f);
-
 	instance_ptrAsinello->translate(-0.1f, -0.5f, -0.05f);
 	instance_ptrAsinello->translate(0.15f, -0.0f, -0.07f);
 	instance_ptrAsinello->rotate_y(10);
 	instance_ptrAsinello->scale(6, 6, 6);
-
 	instance_ptrAsinello->setCMat(instance_di_supporto->getCMat()* instance_ptrAsinello->getCMat());
 	instance_ptrAsinello->setIMat(instance_ptrAsinello->getIMat()* instance_di_supporto->getIMat());
-
 	instance_ptrAsinello->InOmbrabile = true;
 	instance_ptrAsinello->FaOmbra = true;
 	world.add(instance_ptrAsinello);
@@ -376,12 +340,10 @@ int main(int argc, char* argv[])
 
 	mesh* threeWise = new mesh("models/threeNegros.obj", "models/");
 	auto instance_ptrWise = make_shared<instance>(threeWise, m_vetro_viola_in_aria);
-
 	float scalaRe = 1.25;
 	instance_ptrWise->translate(0.00, -0.38, 0.00);
 	instance_ptrWise->scale(scalaRe, scalaRe, scalaRe);
 	instance_ptrWise->translate(0.00, scalaRe * 0.38 + 0.13, 0.00);
-
 	instance_ptrWise->scale(3.5, 3.5, 3.5);
 	instance_ptrWise->translate(2.5f, -8.5f, 4.0f);
 	instance_ptrWise->rotate_y(0.0);
@@ -389,6 +351,7 @@ int main(int argc, char* argv[])
 	instance_ptrWise->FaOmbra = true;
 	world.add(instance_ptrWise);
 
+	// Sfondo
 	mesh* library = new mesh("models/library.obj", "models/");
 	texture* library_tex = new image_texture("models/BaseColor.jpg");
 	material* library_m = new lambertian(color(1.0, 1.0, 1.0));
@@ -576,7 +539,7 @@ int main(int argc, char* argv[])
 
 	mesh* bookend = new mesh("models/bookend.obj", "models/");
 	texture* bookend_tex = new image_texture("models/marmoGiallo.jpg");
-	lambertian_shiny* bookend_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.3, 0.1);
+	lambertian_shiny* bookend_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.3, 0.2);
 	bookend_m->texture = bookend_tex;
 	auto bookend_ptr = make_shared<instance>(bookend, bookend_m);
 	bookend_ptr->scale(0.215f, 0.215f, 0.215f);
@@ -589,7 +552,7 @@ int main(int argc, char* argv[])
 
 	mesh* vase = new mesh("models/vase.obj", "models/");
 	texture* vase_tex = new image_texture("models/vase_tex.jpg");
-	material* vase_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.3, 0.1);
+	material* vase_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.05, 0.3);
 	vase_m->texture = vase_tex;
 	auto vase_ptr = make_shared<instance>(vase, vase_m);
 	vase_ptr->scale(0.8f, 0.8f, 0.8f);
@@ -600,7 +563,7 @@ int main(int argc, char* argv[])
 
 	mesh* chair = new mesh("models/chair.obj", "models/");
 	texture* chair_tex = new image_texture("models/chairTexture.jpg");
-	material* chair_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.3, 0.1);
+	material* chair_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.05, 0.3);
 	chair_m->texture = chair_tex;
 	auto chair_ptr = make_shared<instance>(chair, chair_m);
 	chair_ptr->scale(0.15f, 0.15f, 0.15f);
@@ -757,9 +720,8 @@ int main(int argc, char* argv[])
 	world.add(clock_cover_ptr2);
 
 	mesh* chandelier = new mesh("models/chandelier.obj", "models/");
-	auto instance_ptrChandelier = make_shared<instance>(chandelier, m_vetro_in_aria);
+	auto instance_ptrChandelier = make_shared<instance>(chandelier, m_vetroS_in_aria);
 	instance_ptrChandelier->scale(29.0, 29.0, 29.0);
-	/*instance_ptrChandelier->translate(0.5f, 0.0f, 0.7f);*/
 	instance_ptrChandelier->translate(0.5f, 10.0f, -14.5f);
 	instance_ptrChandelier->translate(0.0f, 1.08f, 0.0f);
 	instance_ptrChandelier->InOmbrabile = true;
@@ -770,12 +732,12 @@ int main(int argc, char* argv[])
 	auto wallLamp_ptr2 = make_shared<instance>(wallLamp2, m_vetro_in_aria);
 	wallLamp_ptr2->scale(3.8, 3.8, 3.8);
 	wallLamp_ptr2->rotate_y(-90.0f);
-	/*wallLamp_ptr->translate(0.5f, 0.0f, 0.7f);*/
 	wallLamp_ptr2->translate(50.0f, 0.0f, -10.0f);
 	wallLamp_ptr2->InOmbrabile = true;
 	wallLamp_ptr2->FaOmbra = false;
 	world.add(wallLamp_ptr2);
 
+	//Vaso con fiore
 	// iperboloide per la superfice esterna
 	float h_min = -1.0, h_max = 1.0;
 	iperb1faldaStandard* vasoFiore1 = new iperb1faldaStandard(h_min, h_max);
@@ -800,7 +762,7 @@ int main(int argc, char* argv[])
 
 	iperb1faldaStandard* vasoFioreInt2 = new iperb1faldaStandard(h_water, h_max2);
 	vasoFioreInt2->normEst = false;
-	auto iperb2_ptr2 = make_shared<instance>(vasoFioreInt2, m_vetroS_in_aria);
+	auto iperb2_ptr2 = make_shared<instance>(vasoFioreInt2, m_vetro_in_aria);
 	iperb2_ptr2->setCMat(iperb2_ptr1->getCMat());
 	iperb2_ptr2->setIMat(iperb2_ptr1->getIMat());
 	world.add(iperb2_ptr2);
@@ -816,7 +778,7 @@ int main(int argc, char* argv[])
 
 	coronaStandard* vasoFiore2 = new coronaStandard(1.0 - spessore);
 	vasoFiore2->normAlto = true; // indca la direzione in cui c'è l'aria
-	auto disc1_ptr = make_shared<instance>(vasoFiore2, m_vetroS_in_aria);
+	auto disc1_ptr = make_shared<instance>(vasoFiore2, m_vetro_in_aria);
 	disc1_ptr->scale(sqrt(1.0 + h_max * h_max), 1.0, sqrt(1.0 + h_max * h_max));
 	disc1_ptr->translate(0.0, h_max, 0.0);
 	disc1_ptr->setCMat(iperb1_ptr->getCMat()* disc1_ptr->getCMat());
@@ -825,7 +787,7 @@ int main(int argc, char* argv[])
 
 	discoStandard* vasoFiore3 = new discoStandard();
 	vasoFiore3->normAlto = false;
-	auto disc2_ptr = make_shared<instance>(vasoFiore3, m_vetroS_in_aria);
+	auto disc2_ptr = make_shared<instance>(vasoFiore3, m_vetro_in_aria);
 	disc2_ptr->scale(sqrt(1.0 + h_min * h_min), 1.0, sqrt(1.0 + h_min * h_min));
 	disc2_ptr->translate(0.0, h_min, 0.0);
 	disc2_ptr->setCMat(iperb1_ptr->getCMat()* disc2_ptr->getCMat());
@@ -841,6 +803,7 @@ int main(int argc, char* argv[])
 	disc3_ptr->setIMat(disc3_ptr->getIMat()* iperb2_ptr1->getIMat());
 	world.add(disc3_ptr);
 
+	//Tulipano
 	mesh* flower1 = new mesh("models/tulip_flower_stalk.obj", "models/");
 	texture* flower1_tex = new image_texture("models/tulip_flower_stalk_Diffuse.jpg");
 	material* flower1_m = new lambertian(color(1.0, 1.0, 1.0));
@@ -858,7 +821,7 @@ int main(int argc, char* argv[])
 
 	mesh* flower2 = new mesh("models/tulip_flower_leaf.obj", "models/");
 	texture* flower2_tex = new image_texture("models/tulip_flower_leaf_Diffuse.jpg");
-	material* flower2_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.3, 0.1);
+	material* flower2_m = new lambertian_shiny(color(1.0, 1.0, 1.0), 0.15, 0.2);
 	flower2_m->texture = flower2_tex;
 	auto flower2_ptr = make_shared<instance>(flower2, flower2_m);
 	flower2_ptr->setCMat(flower1_ptr->getCMat());
@@ -879,6 +842,29 @@ int main(int argc, char* argv[])
 	world.add(flower3_ptr);
 
 
+	// Stella Cometa
+	material* light_stella = new area_light();
+	light_stella->texture = new constant_texture(5 * color(252.0 / 255.0, 186.0 / 255.0, 3.0 / 255.0));
+	mesh* stella = new mesh("models/Stella_Cometa.obj", "models/");
+	auto stella_ptr = make_shared<instance>(stella, light_stella);
+	stella_ptr->translate(-150.00, -65.00, 0.00);
+	stella_ptr->scale(0.01, 0.01, 0.01);
+	stella_ptr->rotate_y(-16.0);
+	stella_ptr->rotate_y(-30.0);
+	stella_ptr->translate(multiply(instance_ptrStalla->getCMat(), point3(2.50, -1.00, -2.42)));
+	stella_ptr->translate(1.00, -0.50, 2.00);
+	world.add(stella_ptr);
+
+	// pannello led
+	material* light_pannello = new area_light();
+	light_pannello->texture = new constant_texture(color(10.0, 10.0, 10.0));
+	point3 w1 = multiply(instance_ptrStalla->getCMat(), point3(-1.276964, - 0.146495, - 1.562272));//26
+	point3 w2 = multiply(instance_ptrStalla->getCMat(), point3(1.920536, - 0.105731, - 0.627021));//22
+	point3 w3 = multiply(instance_ptrStalla->getCMat(), point3(1.279494, - 0.095292, 1.564164));
+	point3 w4 = multiply(instance_ptrStalla->getCMat(), point3(-1.918006, - 0.136056, 0.628913));//27
+	quadrilatero* rectangle_model8 = new quadrilatero(w1, w2, w3, w4);
+	auto rectangle_ptr8 = make_shared<instance>(rectangle_model8, light_pannello);
+	world.add(rectangle_ptr8);
 
 	// candele nel sistema relativo del candelabro
 	//  0, 10; -0, 22;  0, 175
@@ -887,10 +873,8 @@ int main(int argc, char* argv[])
 	//  0, 10; -0, 22; -0, 175
 	//  0, 205; -0,22;  0, 00
 	// -0,20;   -0,22;   0,00
-
-
 	material* light_chandelier = new area_light();
-	light_chandelier->texture = new constant_texture(color(10, 10, 10));
+	light_chandelier->texture = new constant_texture(color(12, 12, 12));
 
 	auto light_position2_1 = make_shared<instance>(sphere_model, light_chandelier);
 	light_position2_1->translate(multiply(instance_ptrChandelier->getCMat(), point3(0.105, 0.22, 0.175)));
@@ -919,75 +903,34 @@ int main(int argc, char* argv[])
 
 	// luci esterne: ai due angoli superiori della beck wall metto due luci sferiche
 	material* light_external = new area_light();
-	light_external->texture = new constant_texture(color(15, 15, 15));
+	light_external->texture = new constant_texture(color(20, 20, 20));
 	auto light_position3_1 = make_shared<instance>(sphere_model, light_external);
-	light_position3_1->scale(5.0, 5.0, 5.0);
+	light_position3_1->scale(6.5, 6.5, 6.5);
 	light_position3_1->translate(v3);
 	world.add(light_position3_1);
 
 	auto light_position3_2 = make_shared<instance>(sphere_model, light_external);
-	light_position3_2->scale(5.0, 5.0, 5.0);
+	light_position3_2->scale(6.5, 6.5, 6.5);
 	light_position3_2->translate(v4);
 	world.add(light_position3_2);
 
 
 	camera cam;
+	// vista panoramica
 	cam.lookfrom = point3(0.0, 0.0, 55.0);
 	cam.lookat = point3(10.0f, 0.0f, -0.15f);
 	cam.vup = point3(0.0, 1.0, 0.0);
+	cam.vfov = 45;
+
+	// vista presepe
+	//cam.lookfrom = point3(-12.0, -7.0, 30.0);
+	//cam.lookat = point3(-5.0f, -7.0f, -0.15f);
+	//cam.vup = point3(0.0, 1.0, 0.0);
+	//cam.vfov = 30;
 
 	cam.aspect_ratio = 16.0f / 9.0f;
-	cam.image_width = 1280; // 1280;
-	cam.samples_per_pixel = 10000; //5000; //20000;
-	cam.vfov = 50;
-
-	// Rendering time: 6543
-	// image_width = 1280
-	// samples_per_pixel = 1000
-	// DEEP_MAX = 20
-
-	// Rendering time: 588
-	// image_width = 1280
-	// samples_per_pixel = 100
-	// DEEP_MAX = 20
-
-	// Rendering time: 6600
-	// image_width = 1280
-	// samples_per_pixel = 1000
-	// DEEP_MAX = 25
-
-	// Rendering time: 655
-	// image_width = 1280
-	// samples_per_pixel = 100
-	// DEEP_MAX = 35
-
-	// Rendering time: 12159
-	// image_width = 1280
-	// samples_per_pixel = 600
-	// DEEP_MAX = 50
-	// numero path: 1280*720*600
-	// numero raggi: 1280*720*600*50 = 2.765e10
-	// raggi al secondo: 2.765e10 / 12159 = 2.274.000
-
-	////////
-	// Rendering time: ~~10h?
-	// image_width = 1280
-	// samples_per_pixel = 10000
-	// DEEP_MAX = 35
-	// numero path:  1280*720*10000
-	// numero raggi: 1280*720*10000*35 = 3.2256e11
-	// secondi con 2.274.000 raggi al secondo:  39h 24m (8,18//8,42 h * 5)
-
-	// Rendering time: 1241
-	// image_width = 1280
-	// samples_per_pixel = 600
-	// DEEP_MAX = 4
-
-	// modifiche:
-	// luci esterne + grandi / luminose
-	// vetro lampadario + scuro
-	// vetro capanna/lampada a muro + chiaro
-	// anfora/sedia - riflettenti e + fuzzi
+	cam.image_width = 1280;
+	cam.samples_per_pixel = 10;
 
 	cam.initialize();
 
@@ -1000,11 +943,111 @@ int main(int argc, char* argv[])
 
 	time_t start, end;
 	double dif;
+
+	// Creare solo una immagine
+	/*
+	*/
 	time(&start);
+	cam.parallel_render(world, worldlight);
+	time(&end);
+	dif = difftime(end, start);
+	cout << "Rendering time: " << dif << "\n";
 
-	//cam.parallel_render(world, worldlight);
+	// Creare immagini a pennellate
+	/*
+	srand(time(0)); // per rendere le pennellate indipendenti
+	
+	time(&start);
+	cam.parallel_render(world, worldlight); // 1645
+	time(&end);
+	dif = difftime(end, start);
+	cout << "Rendering time: " << dif << "\n";
+	saveScreenshotBMP("screenshotP_30_250_Luminoso.bmp");  // 5004 per 250
 
-	/*cam.parallel_render(world, worldlight, NULL, 0, cam.image_height / 5, true);
+	time(&start);
+	cam.parallel_renderReUseSemple(world, worldlight, "screenshotP_30_2000_Luminoso.bmp", 2000, 2250);
+	time(&end);
+	dif = difftime(end, start);
+	cout << "Rendering time: " << dif << "\n";
+	saveScreenshotBMP("screenshotP_30_2250_Luminoso.bmp"); // 4958
+
+	time(&start);
+	cam.parallel_renderReUseSemple(world, worldlight, "screenshotP_30_2250_Luminoso.bmp", 2250, 2500);
+	time(&end);
+	dif = difftime(end, start);
+	cout << "Rendering time: " << dif << "\n";
+	saveScreenshotBMP("screenshotP_30_2500_Luminoso.bmp"); // 5026
+
+	time(&start);
+	cam.parallel_renderReUseSemple(world, worldlight, "screenshotP_30_2500_Luminoso.bmp", 2500, 2750);
+	time(&end);
+	dif = difftime(end, start);
+	cout << "Rendering time: " << dif << "\n";
+	saveScreenshotBMP("screenshotP_30_2750_Luminoso.bmp"); // 5086
+	*/
+
+	// differenza immagini
+	/*
+	SDL_Surface* surface1;
+	SDL_Surface* surface2;
+	surface1 = loadTexture("ImmaginiPresepe/screenshotP_30_5000_Luminoso.jpg", cam.image_width, cam.image_height);
+	surface2 = loadTexture("ImmaginiPresepe/screenshotP_30_4000_Luminoso.jpg", cam.image_width, cam.image_height);
+	//surface1 = loadTexture("Immagini panoramiche/screenshot_25_4000_Luminoso.bmp", cam.image_width, cam.image_height);
+	//surface2 = loadTexture("Immagini panoramiche/screenshot_25_5200_Luminoso.bmp", cam.image_width, cam.image_height);
+	// The mean square error
+	vec3 mse(0.0, 0.0, 0.0);
+	float max_diff = 0;
+	for (int j = 0; j < cam.image_height; j++) {
+		for (int i = 0; i < cam.image_width; i++) {
+			Uint32 value1 = getpixel(surface1, i, j);
+
+			float red1 = float((value1 >> 16) & 0xff) / 255.0f;
+			float green1 = float((value1 >> 8) & 0xff) / 255.0f;
+			float blue1 = float(value1 & 0xff) / 255.0f;
+
+			Uint32 value2 = getpixel(surface2, i, j);
+
+			float red2 = float((value2 >> 16) & 0xff) / 255.0f;
+			float green2 = float((value2 >> 8) & 0xff) / 255.0f;
+			float blue2 = float(value2 & 0xff) / 255.0f;
+
+			vec3 differenze(abs(red1 - red2), abs(green1 - green2), abs(blue1 - blue2));
+
+			setColor(differenze[0], differenze[1], differenze[2]);
+			setPixel(i, j);
+
+			mse += differenze*differenze;
+
+			float norma = differenze.length();
+			if (norma > max_diff)
+				max_diff = norma;
+		}
+	}
+	SDL_RenderPresent(renderer);
+	//saveScreenshotBMP("screenshot_differenza_25_5200-4000.bmp");
+
+	mse = mse / (cam.image_width * cam.image_height);
+	cout << "mean square error: (" << mse[0] << ", " << mse[1] << ", " << mse[2] << ")\n";
+	cout << "differenza massima: " << max_diff << endl;
+
+	// tra screenshot_25_5200_Luminoso e screenshot_25_4000_Luminoso:
+	// mean square error: (0.000109866, 0.000103728, 7.68468e-05)
+	// differenza massima: 0.14762
+	// la convergenza inizia a stagnare => mi fermo
+
+	// tra screenshot_25_5200_Luminoso e screenshot_25_1250_Luminoso:
+	// mean square error : (0.000937796, 0.000881924, 0.000652352)
+	// differenza massima : 0.487175
+
+	// tra screenshotP_30_5000_Luminoso e screenshotP_30_4000_Luminoso:
+	// mean square error : (0.000222746, 0.000225906, 0.000236698)
+	// differenza massima : 0.271694
+	// la convergenza inizia a stagnare => mi fermo
+	*/
+
+	// Creare immagini a fascie
+	/*
+	cam.parallel_render(world, worldlight, NULL, 0, cam.image_height / 5, true);
 	saveScreenshotBMP("screenshot_primo_quinto.bmp");
 	time(&end);
 	dif = difftime(end, start);
@@ -1020,38 +1063,27 @@ int main(int argc, char* argv[])
 	saveScreenshotBMP("screenshot_terzo_quinto.bmp");
 	time(&end);
 	dif = difftime(end, start);
-	cout << "\n" << "Rendering time: " << dif << "\n"; // 30325
+	cout << "\n" << "Rendering time: " << dif << "\n";
 	// cam.image_height = 720
 	// 2 * cam.image_height / 5 + 1 = 289
 	// 3 * cam.image_height / 5 = 432
 	// righe computate: 144
 	// tempo medio di una riga: 210.6 s
-	// righe all'ora: 60*60/210.6 = 17*/
-
-	cam.parallel_render(world, worldlight, "screenshot_terzo_quinto.bmp", 3 * cam.image_height / 5 + 1, 3 * cam.image_height / 5 + 18, true);
-	saveScreenshotBMP("screenshot_quarto_quinto1.bmp");
-	time(&end);
-	dif = difftime(end, start);
-	cout << "\n" << "Rendering time: " << dif << "\n"; //
-	// cam.image_height = 720
-	// 3 * cam.image_height / 5 + 1 = 433
-	// 7 * cam.image_height / 10 = 504
-	// righe computate: 72
-	// tempo medio di una riga: 210.6 s
 	// righe all'ora: 60*60/210.6 = 17
 
-	cam.parallel_render(world, worldlight, "screenshot_quarto_quinto1.bmp", 3 * cam.image_height / 5 + 19, 4 * cam.image_height / 5, true);
+	cam.parallel_render(world, worldlight, "screenshot_quarto_quinto0.bmp", 3 * cam.image_height / 5 + 1, 4 * cam.image_height / 5, true);
 	saveScreenshotBMP("screenshot_quarto_quinto2.bmp");
 	time(&end);
 	dif = difftime(end, start);
 	cout << "\n" << "Rendering time: " << dif << "\n";
 
-	cam.parallel_render(world, worldlight, "screenshot_quarto_quinto2.bmp", 4 * cam.image_height / 5 + 1, cam.image_height -1, true);
+	cam.parallel_render(world, worldlight, "screenshot_quarto_quinto2.bmp", 4 * cam.image_height / 5 + 1, cam.image_height - 1, true);
+	saveScreenshotBMP("screenshot_35_10000.bmp");
 	time(&end);
 	dif = difftime(end, start);
 	cout << "\n" << "Rendering time: " << dif << "\n";
+	*/
 
-	saveScreenshotBMP("screenshot_35_10000.bmp");
 
 	SDL_Event event;
 	bool quit = false;

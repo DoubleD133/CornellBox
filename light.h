@@ -12,7 +12,7 @@
 #include <memory>
 #include <vector>
 
-const int DEEP_MAX = 35; // 8 o 20 consigliati
+const int DEEP_MAX = 8; // 8 o 20 consigliati
 
 using std::shared_ptr;
 using std::make_shared;
@@ -389,19 +389,30 @@ color material::shading(const ray& r, light& light, hit_record& hr, point3& came
 }
 
 float fresnel(hit_record& hr, float eta_in, float eta_out) {
-	float eta;
-	if (hr.front_face)
+	float eta; // corrisponde ad nt_over_ni o se preferiamo 1/ni_over_nt
+	if (hr.front_face) {
+		// abbiamo colpito la superfice da fuori
+		// significa che il raggio incidente (su cui abbiamo fatto ray casting per giungere ad hr)
+		// giace nel dielettrico "out" => n_i = eta_out => n_t = eta_in => eta come di seguito
 		eta = eta_in / eta_out;
-	else
+	}
+	else {
+		// abbiamo colpito la superfice da dentro facendo rey casting
+		// significa che il raggio incidente (su cui abbiamo fatto ray casting per giungere ad hr)
+		// giace nel dielettrico "in" => n_i = eta_in => n_t = eta_out => eta come di seguito
 		eta = eta_out / eta_in;
+	}
 
 	float cos_theta_i = hr.d_dot_n;
+	// fresnell: sen_theta_i * n_i = sen_theta_t * n_t
+	// => cos_theta_t = [ 1 - (1 - cos_theta_i^2 ) * ni^2 / nt^2 ] = [ 1 - (1 - cos_theta_i^2 ) / eta^2 ] (se >=0)
 	float temp = 1.0 - (1.0 - cos_theta_i * cos_theta_i) / (eta * eta);
 	if (temp <= 0)
 		return 1.0;
 	float cos_theta_t = sqrt(temp);
-	float r_parallel = (eta * cos_theta_i - cos_theta_t) / (eta * cos_theta_i + cos_theta_t);
-	float r_perpendicular = (cos_theta_i - eta * cos_theta_t) / (cos_theta_i + eta * cos_theta_t);
+	// il libro come eta usa ni_over_nt quindi le formule sono scambiate
+	float r_perpendicular = (eta * cos_theta_i - cos_theta_t) / (eta * cos_theta_i + cos_theta_t);
+	float r_parallel = (cos_theta_i - eta * cos_theta_t) / (cos_theta_i + eta * cos_theta_t);
 	return 0.5 * (r_parallel * r_parallel + r_perpendicular * r_perpendicular);
 }
 
@@ -413,6 +424,10 @@ color ray_color(const ray& r, hittable_list& world, light& worldlight, point3& c
 	hit_record rec;
 
 	if (world.hit(r, interval(0.001, infinity), rec)) {
+		// questa funzione di ray casting (a differenza del metodo della classe camera) calcola
+		// anche a che distanza dall'origine viene trovata l'intersezione
+		// si può verificare facilmente che i raggi a cui è applicata questa funzione hanno tutti
+		// direzione unitaria, quindi questa distanza corrisponde semplicemente a rec.t
 		t = rec.t;
 		return rec.m->shading(r, worldlight, rec, camera_pos, world, depth);
 	}
@@ -436,26 +451,30 @@ color dielectric::shading(const ray& r, light& light, hit_record& hr, point3& ca
 	color L(0.0, 0.0, 0.0);
 	vec3 wi, wo, wt;
 	float len = r.d.length();
+	// vettore di input (diretto uscente dal punto hr)
 	wi = -r.d / len;
+	// definisco cos_theta_i=d_dot_n come proprietà di hr in modo da non doverlo ricalcolare
 	hr.d_dot_n = dot(wi, hr.normal);
+	// direzione di output/riflessione (diretto uscente dal punto hr)
 	wo = reflect(wi, hr.normal);
 
 	float kr = fresnel(hr, eta_in, eta_out);
-	color fr = ks * kr;
 	ray reflected_ray(hr.p, wo);
+	// definisco una variabile che indicherà la lunghezza percorsa dalla luce per giungere in hr (calcolata facendo ray casting)
 	float t;
 	color Lr, Lt;
 
-	if (random_float() < kr) { // riflessione totale
+	if (random_float() < kr) {
 		if (hr.front_face) {
-			Lr = ray_color(reflected_ray, world, light, camera_pos, t, depth + 1);
+			Lr = ray_color(reflected_ray, world, light, camera_pos, t, depth + 1); // t passato per riferimento
+			// la luce proveniente dal raggio riflesso è Lr, ma questa va modulata indirettamente da kr (a causa della condizione dell'if)
+			// ed inoltre deve essere modulata tenendo conto che ha attraversato un dielettrico che ne ha ridotto l'intensità in
+			// modo esponenziale (color filtering)
 			L += color(pow(c_out[0], t) * Lr[0], pow(c_out[1], t) * Lr[1], pow(c_out[2], t) * Lr[2]);
-			//L = L / 2.0;
 		}
 		else {
 			Lr = ray_color(reflected_ray, world, light, camera_pos, t, depth + 1);
 			L += color(pow(c_in[0], t) * Lr[0], pow(c_in[1], t) * Lr[1], pow(c_in[2], t) * Lr[2]);
-			//L = L / 2.0;
 		}
 	}
 	else {
@@ -467,10 +486,10 @@ color dielectric::shading(const ray& r, light& light, hit_record& hr, point3& ca
 			ni_over_nt = eta_out / eta_in;
 		} else 
 			ni_over_nt = eta_in / eta_out;
+		// direzione di trasmissione/rifrazione (diretto uscente dal punto hr)
 		wt = refract(wi, hr.normal, ni_over_nt);
+		// la modulazione della luce in funzione del coefficinte di fresnell viene fatta implicitamente
 		color ft(1.0, 1.0, 1.0);
-		float ndotwt = dot(hr.normal, wt);
-		//ft = ft * ni_over_nt * ni_over_nt;
 		ray trasmitted_ray(hr.p, wt);
 
 		if (hr.front_face) {
@@ -548,7 +567,7 @@ class lambertian_shiny : public material {
 public:
 	color c_out = color(1.0, 1.0, 1.0);
 	color albedo;
-	// probabilità che rifletta il raggio
+	// probabilità che rifletta il raggio casualmente:
 	float prob = 0.5;
 	// distorsione del raggio riflesso
 	float fuzz;
@@ -556,7 +575,7 @@ public:
 	lambertian_shiny(const color& a, float p, float f) : albedo(a), prob(p) { if (f < 1) fuzz = f; else fuzz = 1; }
 
 	color shading(const ray& r, light& light, hit_record& hr, point3& camera_pos, hittable_list& world, int depth) override {
-		if (random_float() >= 0.5) {
+		if (random_float() >= prob) {
 			color L(0.0, 0.0, 0.0);
 			vec3 wo;
 			wo = hr.normal + random_in_unit_sphere();
